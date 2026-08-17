@@ -98,67 +98,12 @@
       >
     </section>
 
-    <!-- Shop by Category Section -->
-    <div class="section-header">
-      <h3>Shop by Category</h3>
-      <button class="section-see-all" onclick="filterByCategory('all')">
-        <span>See all</span>
-        <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-      </button>
-    </div>
-
-    <!-- Category Horizontal Scroll -->
-    <div class="category-scroll" id="categoryScroll">
-      <button class="category-btn active" data-cat="all" onclick="filterByCategory('all')">
-        <div class="category-icon-box">
-          <i data-lucide="layout-grid" style="width:28px;height:28px;color:var(--primary);"></i>
-        </div>
-        <span class="category-label">All</span>
-      </button>
-
-      <button class="category-btn" data-cat="projectors" onclick="filterByCategory('projectors')">
-        <div class="category-icon-box">
-          <img src="assets/gaming.png" alt="Projectors">
-        </div>
-        <span class="category-label">Projectors</span>
-      </button>
-
-      <button class="category-btn" data-cat="audio" onclick="filterByCategory('audio')">
-        <div class="category-icon-box">
-          <img src="assets/headphones.png" alt="Audio">
-        </div>
-        <span class="category-label">Audio</span>
-      </button>
-
-      <button class="category-btn" data-cat="appliances" onclick="filterByCategory('appliances')">
-        <div class="category-icon-box">
-          <img src="assets/laptop.png" alt="Appliances">
-        </div>
-        <span class="category-label">Appliances</span>
-      </button>
-
-      <button class="category-btn" data-cat="cameras" onclick="filterByCategory('cameras')">
-        <div class="category-icon-box">
-          <img src="assets/watch.png" alt="Cameras">
-        </div>
-        <span class="category-label">Cameras</span>
-      </button>
-
-      <button class="category-btn" data-cat="wellness" onclick="filterByCategory('wellness')">
-        <div class="category-icon-box">
-          <img src="assets/earbuds.png" alt="Wellness">
-        </div>
-        <span class="category-label">Wellness</span>
-      </button>
-    </div>
-
     <!-- Popular Picks Product Grid -->
-    <div class="section-header" id="popularPicksHeader">
-      <h3>Popular Picks</h3>
-      <button class="section-see-all" onclick="filterByCategory('all')">
-        <span>See all</span>
-        <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-      </button>
+    <div class="section-header" id="popularPicksHeader" style="margin-top: 20px;">
+      <h3>Featured Products</h3>
+      <div style="font-size:0.8rem;font-weight:700;color:var(--primary);">
+        1–3h Express Delivery
+      </div>
     </div>
 
     <!-- Product Grid (2 in a Row Responsive) -->
@@ -184,20 +129,14 @@
 
   </div> <!-- End App Shell -->
 
-  <!-- Fixed Bottom Navigation Bar -->
+  <!-- Fixed Bottom Navigation Bar (Home, Orders, Favorites) -->
   <nav class="bottom-nav-bar" aria-label="Main Navigation">
     <div class="bottom-nav-inner">
-      <ul class="bottom-nav-list">
+      <ul class="bottom-nav-list" style="justify-content: space-around;">
         <li class="bottom-nav-item">
           <button class="bottom-nav-btn active" onclick="switchNavTab(this, 'home')">
             <i data-lucide="home" style="width:22px;height:22px;"></i>
             <span>Home</span>
-          </button>
-        </li>
-        <li class="bottom-nav-item">
-          <button class="bottom-nav-btn" onclick="openDrawer()">
-            <i data-lucide="layout-grid" style="width:22px;height:22px;"></i>
-            <span>Categories</span>
           </button>
         </li>
         <li class="bottom-nav-item">
@@ -210,12 +149,6 @@
           <button class="bottom-nav-btn" onclick="showFavorites()">
             <i data-lucide="heart" style="width:22px;height:22px;"></i>
             <span>Favorites</span>
-          </button>
-        </li>
-        <li class="bottom-nav-item">
-          <button class="bottom-nav-btn" onclick="openContactModal()">
-            <i data-lucide="user" style="width:22px;height:22px;"></i>
-            <span>Account</span>
           </button>
         </li>
       </ul>
@@ -234,32 +167,31 @@
       </div>
 
       <div style="font-size:0.75rem;font-weight:700;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">
-        Browse Categories
+        Quick Navigation
       </div>
 
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
-        <button onclick="filterByCategory('all'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>All Products (10 Items)</span>
+        <button onclick="renderProductGrid(); closeDrawer(); window.scrollTo({top:0, behavior:'smooth'});" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="home" style="width:16px;height:16px;color:var(--primary);"></i>
+            <span>All Products</span>
+          </span>
           <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
         </button>
-        <button onclick="filterByCategory('projectors'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>Smart Projectors (2)</span>
+
+        <button onclick="openOrdersManager(); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="package" style="width:16px;height:16px;color:var(--primary);"></i>
+            <span>Track Orders</span>
+          </span>
           <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
         </button>
-        <button onclick="filterByCategory('audio'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>Sound Bars & Audio</span>
-          <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-        </button>
-        <button onclick="filterByCategory('appliances'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>Home & Kitchen</span>
-          <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-        </button>
-        <button onclick="filterByCategory('cameras'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>Security Cameras</span>
-          <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-        </button>
-        <button onclick="filterByCategory('wellness'); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
-          <span>Massage & Wellness</span>
+
+        <button onclick="showFavorites(); closeDrawer();" style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--muted);border:none;font-weight:700;color:var(--foreground);cursor:pointer;">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="heart" style="width:16px;height:16px;color:#E0245E;"></i>
+            <span>Saved Favorites</span>
+          </span>
           <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
         </button>
       </div>
