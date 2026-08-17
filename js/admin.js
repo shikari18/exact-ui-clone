@@ -154,6 +154,8 @@ window.quickUpdatePrice = function(id, newPrice) {
 window.quickUpdateStock = function(id, newStock) {
   ProductStore.update(id, { stock: newStock.trim() || "In Stock" });
   showToast("✅ Stock status updated.");
+};
+
 // Copy Direct Product Link for WhatsApp Customers
 window.copyAdminProductLink = function(productId, btn) {
   const url = window.location.origin + '/?p=' + productId;
@@ -416,7 +418,7 @@ window.clearAllOrders = function() {
 // =========================================================================
 
 window.exportCatalogJson = function() {
-  const products = ProductStore.getAll();
+  const products = getCatalogSafe();
   const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -428,7 +430,7 @@ window.exportCatalogJson = function() {
 };
 
 window.exportCatalogJs = function() {
-  const products = ProductStore.getAll();
+  const products = getCatalogSafe();
   const fileContent = 
     `// SLICK TEK — Exported Inventory Catalog\n\n` +
     `const INITIAL_PRODUCTS = ${JSON.stringify(products, null, 2)};\n\n` +
