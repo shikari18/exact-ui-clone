@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SLICK TEK — Admin Portal & Inventory Manager</title>
+  <meta name="theme-color" content="#FFFFFF">
+
+  <!-- Plus Jakarta Sans Font & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Top Admin Bar -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-brand">
+        <h1 style="font-size:1.3rem;font-weight:900;font-style:italic;color:var(--primary);letter-spacing:-0.04em;">
+          SLICK TEK
+        </h1>
+        <span class="brand-badge">Admin Manager</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;">
+        <a href="index.html" class="btn-store-link" target="_blank">
+          <span>View Live Store</span>
+          <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Admin Main Container -->
+  <main class="admin-container">
+
+    <!-- KPI Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i data-lucide="package" style="width:24px;height:24px;"></i>
+        </div>
+        <div>
+          <div class="stat-label">Total Products</div>
+          <div class="stat-value" id="statTotalProducts">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#EAFBF0;color:var(--green);">
+          <i data-lucide="shopping-bag" style="width:24px;height:24px;"></i>
+        </div>
+        <div>
+          <div class="stat-label">Received Orders</div>
+          <div class="stat-value" id="statTotalOrders">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#FFF3CD;color:#856404;">
+          <i data-lucide="images" style="width:24px;height:24px;"></i>
+        </div>
+        <div>
+          <div class="stat-label">Total Photos</div>
+          <div class="stat-value" id="statTotalPhotos">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" id="tabProductsBtn" onclick="switchAdminTab('products')">
+        <i data-lucide="grid" style="width:18px;height:18px;"></i>
+        <span>Products & Inventory</span>
+      </button>
+
+      <button class="tab-btn" id="tabOrdersBtn" onclick="switchAdminTab('orders')">
+        <i data-lucide="clipboard-list" style="width:18px;height:18px;"></i>
+        <span>Customer Orders (<span id="tabOrdersBadge">0</span>)</span>
+      </button>
+
+      <button class="tab-btn" id="tabBackupBtn" onclick="switchAdminTab('backup')">
+        <i data-lucide="database" style="width:18px;height:18px;"></i>
+        <span>Backup & Export</span>
+      </button>
+    </div>
+
+    <!-- =====================================================================
+         TAB 1: PRODUCTS MANAGER
+         ===================================================================== -->
+    <section id="sectionProducts">
+      <div class="action-bar">
+        <div class="search-field">
+          <i data-lucide="search" style="width:18px;height:18px;color:var(--text-muted);"></i>
+          <input type="text" id="adminSearchInput" placeholder="Filter products by name or category..." oninput="filterAdminProducts(this.value)">
+        </div>
+
+        <button class="btn-primary-action" onclick="openAddProductModal()">
+          <i data-lucide="plus" style="width:18px;height:18px;"></i>
+          <span>Add New Product</span>
+        </button>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="admin-product-grid" id="adminProductGrid">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: ORDERS MANAGER
+         ===================================================================== -->
+    <section id="sectionOrders" style="display:none;">
+      <div class="action-bar">
+        <div class="search-field">
+          <i data-lucide="search" style="width:18px;height:18px;color:var(--text-muted);"></i>
+          <input type="text" id="orderSearchInput" placeholder="Search orders by phone or address..." oninput="filterAdminOrders(this.value)">
+        </div>
+
+        <button class="btn-card-action danger" onclick="clearAllOrders()" style="flex:none;padding:10px 16px;">
+          <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+          <span>Clear Order History</span>
+        </button>
+      </div>
+
+      <div class="orders-table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Item Ordered</th>
+              <th>Price (POD)</th>
+              <th>Customer Phone</th>
+              <th>Address / Location</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 3: BACKUP & DATA
+         ===================================================================== -->
+    <section id="sectionBackup" style="display:none;">
+      <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:650px;">
+        <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:8px;">Inventory Data & Export</h3>
+        <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">
+          Your products and prices are saved in your browser's local database. You can export the current catalog or reset to the original default catalog anytime.
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="btn-primary-action" onclick="exportCatalogJson()" style="justify-content:center;">
+            <i data-lucide="download" style="width:18px;height:18px;"></i>
+            <span>Export Catalog (JSON)</span>
+          </button>
+
+          <button class="btn-card-action" onclick="exportCatalogJs()" style="justify-content:center;padding:12px;">
+            <i data-lucide="file-code" style="width:18px;height:18px;color:var(--primary);"></i>
+            <span>Export Updated `products.js` File</span>
+          </button>
+
+          <button class="btn-card-action danger" onclick="confirmResetDefaults()" style="justify-content:center;padding:12px;margin-top:10px;">
+            <i data-lucide="rotate-ccw" style="width:18px;height:18px;"></i>
+            <span>Reset Catalog to Original Defaults</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =======================================================================
+       ADD / EDIT PRODUCT MODAL
+       ======================================================================= -->
+  <div class="modal-overlay" id="productModal" role="dialog" aria-hidden="true">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New Product</h3>
+        <button class="btn-close-modal" onclick="closeProductModal()" aria-label="Close">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <form id="productForm" onsubmit="event.preventDefault(); saveProductFromForm();">
+        <input type="hidden" id="editProductId" value="">
+
+        <!-- Product Name -->
+        <div class="form-field">
+          <label for="prodName">Product Name *</label>
+          <input type="text" id="prodName" placeholder="e.g. Smart Cinema Projector" required>
+        </div>
+
+        <!-- Category & Price in Cedis -->
+        <div style="display:grid;grid-template-columns: 1fr 1fr;gap:12px;">
+          <div class="form-field">
+            <label for="prodCategory">Category *</label>
+            <select id="prodCategory" required>
+              <option value="projectors">📽️ Smart Projectors</option>
+              <option value="audio">🔊 Sound Systems & Audio</option>
+              <option value="appliances">🍲 Home & Kitchen</option>
+              <option value="cameras">📹 Security Cameras</option>
+              <option value="wellness">💆 Personal Care & Wellness</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="prodPrice">Price in GH₵ (Cedis) *</label>
+            <input type="number" id="prodPrice" placeholder="e.g. 899" min="1" step="1" required>
+          </div>
+        </div>
+
+        <!-- Stock Quantity -->
+        <div class="form-field">
+          <label for="prodStock">Stock Status *</label>
+          <input type="text" id="prodStock" placeholder="e.g. 20 PCs in Stock or In Stock" required>
+        </div>
+
+        <!-- Tagline / Short Description -->
+        <div class="form-field">
+          <label for="prodTagline">Short Tagline (Optional)</label>
+          <input type="text" id="prodTagline" placeholder="e.g. 360° Rotating Cinema with Built-in Speaker">
+        </div>
+
+        <!-- Multi-Image Upload & Management -->
+        <div class="form-field">
+          <label>Product Images (Slideable Gallery) *</label>
+          
+          <!-- Dropzone / File Picker -->
+          <div class="image-upload-dropzone" onclick="document.getElementById('imageFileInput').click()">
+            <i data-lucide="upload-cloud" style="width:32px;height:32px;color:var(--primary);margin:0 auto 6px auto;"></i>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--text-dark);">
+              Click to Upload Photos from Device
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">
+              Supports multiple PNG, JPG, or JPEG images
+            </div>
+            <input 
+              type="file" 
+              id="imageFileInput" 
+              accept="image/*" 
+              multiple 
+              style="display:none;" 
+              onchange="handleImageFilesUpload(event)"
+            >
+          </div>
+
+          <!-- Or Add Path/URL -->
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <input type="text" id="customImageUrl" placeholder="Or paste image folder path or URL..." style="font-size:0.85rem;padding:8px 12px;">
+            <button type="button" class="btn-card-action" onclick="addCustomImageUrl()" style="flex:none;padding:8px 14px;">
+              Add Image
+            </button>
+          </div>
+
+          <!-- Preview of All Images in Gallery -->
+          <div class="image-preview-strip" id="imagePreviewStrip">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="display:flex;gap:10px;margin-top:24px;">
+          <button type="button" class="btn-card-action" onclick="closeProductModal()" style="padding:14px;">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary-action" style="flex:2;justify-content:center;padding:14px;font-size:1rem;">
+            <i data-lucide="check" style="width:18px;height:18px;"></i>
+            <span id="btnSaveLabel">Save Product</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/products.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
