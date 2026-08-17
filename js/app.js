@@ -404,6 +404,9 @@ window.submitOrder = function() {
   localStorage.setItem('slick_tek_orders', JSON.stringify(existingOrders));
   updateOrdersBadge();
 
+  // Send Automated Background WhatsApp Message to Store Owner (No customer redirect)
+  sendBackgroundWhatsAppAlert(orderRecord);
+
   // Close Order Sheet & Show On-Screen Confirmation to Customer (NO popup redirect)
   closeModal('orderModal');
 
@@ -463,6 +466,28 @@ function startCountdown(durationSec) {
 
   tick();
   countdownInterval = setInterval(tick, 1000);
+}
+
+// Send Automated WhatsApp Alert in background
+function sendBackgroundWhatsAppAlert(order) {
+  const apiKey = localStorage.getItem('slick_tek_callmebot_key');
+  const ownerPhone = localStorage.getItem('slick_tek_alert_phone') || "233248191726";
+  
+  if (!apiKey) return;
+
+  const text = `📦 *NEW ORDER ON SLICK TEK!*\n\n` +
+    `🛒 *Product:* ${order.product}\n` +
+    `💰 *Amount (POD):* GH₵ ${Number(order.price).toLocaleString()}\n` +
+    `📞 *Customer Phone:* ${order.phone}\n` +
+    `📍 *Delivery Address:* ${order.address}\n` +
+    `⏰ *Time:* ${new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\n\n` +
+    `💬 *Chat Customer:* https://wa.me/233${order.phone.replace(/^0/, '')}`;
+
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${ownerPhone}&text=${encodeURIComponent(text)}&apikey=${apiKey}`;
+  
+  try {
+    fetch(url, { mode: 'no-cors' }).catch(() => {});
+  } catch (e) {}
 }
 
 // Orders Manager Dashboard

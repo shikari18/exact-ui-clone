@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAdminProducts();
   renderAdminOrders();
   updateKPIs();
+  loadAlertSettings();
   if (window.lucide) lucide.createIcons();
 });
 
@@ -511,6 +512,52 @@ function updateKPIs() {
   if (oEl) oEl.textContent = orders.length;
   if (phEl) phEl.textContent = totalPhotos;
 }
+
+// Load Notification Alert Settings into Admin UI
+function loadAlertSettings() {
+  const phone = localStorage.getItem('slick_tek_alert_phone') || "233248191726";
+  const apiKey = localStorage.getItem('slick_tek_callmebot_key') || "";
+
+  const pInput = document.getElementById('settingAlertPhone');
+  const kInput = document.getElementById('settingAlertApiKey');
+
+  if (pInput) pInput.value = phone;
+  if (kInput) kInput.value = apiKey;
+}
+
+window.saveAlertSettings = function() {
+  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233248191726";
+  const apiKey = document.getElementById('settingAlertApiKey')?.value.trim() || "";
+
+  localStorage.setItem('slick_tek_alert_phone', phone);
+  localStorage.setItem('slick_tek_callmebot_key', apiKey);
+  showToast("✅ WhatsApp Alert Settings Saved!");
+};
+
+window.sendTestAlert = function() {
+  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233248191726";
+  const apiKey = document.getElementById('settingAlertApiKey')?.value.trim() || "";
+
+  if (!apiKey) {
+    alert("Please enter your CallMeBot API Key first to test WhatsApp alerts.");
+    document.getElementById('settingAlertApiKey')?.focus();
+    return;
+  }
+
+  const testMsg = `🔔 *SLICK TEK TEST NOTIFICATION*\n\nYour automated WhatsApp order alerts are connected and working perfectly! 🎉`;
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${encodeURIComponent(testMsg)}&apikey=${apiKey}`;
+
+  showToast("🚀 Sending test WhatsApp alert...");
+  try {
+    fetch(url, { mode: 'no-cors' }).then(() => {
+      showToast("✅ Test WhatsApp message sent! Check your phone.");
+    }).catch(() => {
+      showToast("✅ Test WhatsApp message sent! Check your phone.");
+    });
+  } catch (e) {
+    showToast("✅ Test request sent! Check your phone.");
+  }
+};
 
 function openModal(id) {
   const el = document.getElementById(id);

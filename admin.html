@@ -151,10 +151,46 @@
     </section>
 
     <!-- =====================================================================
-         TAB 3: BACKUP & DATA
+         TAB 3: BACKUP & SETTINGS
          ===================================================================== -->
     <section id="sectionBackup" style="display:none;">
-      <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:650px;">
+      <!-- Automated WhatsApp Order Alerts Settings Card -->
+      <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:650px;margin-bottom:20px;box-shadow:var(--shadow-card);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:#EAFBF0;color:#25D366;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="message-circle" style="width:20px;height:20px;"></i>
+          </div>
+          <div>
+            <h3 style="font-size:1.15rem;font-weight:800;">Automated WhatsApp Alerts</h3>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Receive background WhatsApp messages when customers order</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+          <div>
+            <label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:4px;">Your WhatsApp Number (with country code)</label>
+            <input type="text" id="settingAlertPhone" value="233248191726" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;">
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:4px;">CallMeBot API Key</label>
+            <input type="text" id="settingAlertApiKey" placeholder="Paste your API key here (e.g. 1234567)..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;">
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button class="btn-primary-action" onclick="saveAlertSettings()" style="flex:1;justify-content:center;">
+              <i data-lucide="save" style="width:16px;height:16px;"></i>
+              <span>Save Alert Settings</span>
+            </button>
+            <button class="btn-card-action" onclick="sendTestAlert()" style="flex:1;justify-content:center;padding:10px;">
+              <i data-lucide="send" style="width:16px;height:16px;color:#25D366;"></i>
+              <span>Test WhatsApp Alert</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:650px;box-shadow:var(--shadow-card);">
         <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:8px;">Inventory Data & Export</h3>
         <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">
           Your products and prices are saved in your browser's local database. You can export the current catalog or reset to the original default catalog anytime.
