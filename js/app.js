@@ -2,9 +2,10 @@
  * SLICK TEK — Exact UI Clone Application Controller
  */
 
-const OWNER_WHATSAPP = "233248191726";
+const OWNER_WHATSAPP = "233509737543"; // 0509737543
 
 let selectedProduct = null;
+let detectedGpsCoords = null;
 let activeCategory = 'all';
 let searchQuery = '';
 let countdownInterval = null;
@@ -349,9 +350,10 @@ async function handleAutoLocation() {
       msg.textContent = status;
     });
 
+    detectedGpsCoords = geo.coords;
     addressField.value = geo.formattedAddress;
     label.textContent = "✅ Address Auto-Filled";
-    msg.textContent = "GPS address verified.";
+    msg.textContent = `GPS Pin on Map: ${geo.coords.latitude.toFixed(4)}, ${geo.coords.longitude.toFixed(4)}`;
     msg.style.color = "var(--green-text)";
   } catch (err) {
     label.textContent = "📍 Tap to Retry Location";
@@ -367,12 +369,13 @@ async function handleAutoLocation() {
 
 window.fillSampleAddress = function() {
   const demo = GeoService.getDemoLocation();
+  detectedGpsCoords = demo.coords;
   document.getElementById('addressInput').value = demo.formattedAddress;
   document.getElementById('gpsLabel').textContent = "✅ Address Filled";
   document.getElementById('gpsMsg').style.display = "none";
 };
 
-// Submit Order (100% On-Site Seamless)
+// Submit Order (Opens WhatsApp directly to 0509737543 with Google Maps Pin)
 window.submitOrder = function() {
   const phone = document.getElementById('phoneInput').value.trim();
   const address = document.getElementById('addressInput').value.trim();
@@ -389,6 +392,11 @@ window.submitOrder = function() {
     return;
   }
 
+  // Build Google Maps pin link
+  const mapsLink = detectedGpsCoords 
+    ? `https://maps.google.com/?q=${detectedGpsCoords.latitude},${detectedGpsCoords.longitude}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+
   // Store order in local orders log
   const orderRecord = {
     id: "ORD-" + Math.floor(100000 + Math.random() * 900000),
@@ -396,6 +404,7 @@ window.submitOrder = function() {
     price: selectedProduct.price,
     phone: phone,
     address: address,
+    mapsLink: mapsLink,
     timestamp: new Date().toISOString()
   };
 
@@ -404,10 +413,26 @@ window.submitOrder = function() {
   localStorage.setItem('slick_tek_orders', JSON.stringify(existingOrders));
   updateOrdersBadge();
 
-  // Send Automated Background WhatsApp Message to Store Owner (No customer redirect)
+  // Send background notification if configured
   sendBackgroundWhatsAppAlert(orderRecord);
 
-  // Close Order Sheet & Show On-Screen Confirmation to Customer (NO popup redirect)
+  // Format WhatsApp Order Message directly to 0509737543
+  const whatsappMsg = `🛒 *NEW ORDER ON SLICK TEK*\n\n` +
+    `📦 *Item:* ${selectedProduct.name}\n` +
+    `💰 *Price (Pay on Delivery):* ${formatPrice(selectedProduct.price)}\n\n` +
+    `👤 *Customer Phone:* ${phone}\n` +
+    `📍 *Delivery Address:* ${address}\n` +
+    `🗺️ *Google Maps Location:* ${mapsLink}\n\n` +
+    `⚡ *Delivery Speed:* 1–3 Hours Express\n` +
+    `💵 *Payment:* 100% Pay on Delivery`;
+
+  const targetWhatsApp = localStorage.getItem('slick_tek_alert_phone') || OWNER_WHATSAPP;
+  const whatsappUrl = `https://wa.me/${targetWhatsApp}?text=${encodeURIComponent(whatsappMsg)}`;
+
+  // Open WhatsApp directly to 0509737543
+  window.open(whatsappUrl, '_blank');
+
+  // Close Order Sheet & Show On-Screen Confirmation to Customer
   closeModal('orderModal');
 
   const receipt = document.getElementById('receiptBox');
@@ -424,12 +449,18 @@ window.submitOrder = function() {
       <span style="color:var(--muted-foreground);">Delivery Address:</span>
       <span style="max-width:220px;text-align:right;">${address}</span>
     </div>
+    <div class="receipt-row">
+      <span style="color:var(--muted-foreground);">Google Maps Pin:</span>
+      <a href="${mapsLink}" target="_blank" style="color:var(--primary);font-weight:700;text-decoration:underline;font-size:0.78rem;">
+        View on Google Maps 📍
+      </a>
+    </div>
     <div class="receipt-row total">
       <span>Amount to Pay on Delivery:</span>
       <span style="color:var(--primary);font-size:1.05rem;">${formatPrice(selectedProduct.price)}</span>
     </div>
     <div style="margin-top:8px;padding:8px 10px;background:#FFFFFF;border-radius:8px;border:1px solid var(--border);font-size:0.8rem;color:var(--foreground);">
-      ✅ Order received! Courier is on the way.
+      ✅ Order sent directly to WhatsApp! Courier is dispatching.
     </div>
     <div style="margin-top:6px;color:var(--green-text);font-size:0.8rem;font-weight:700;">
       💵 Pay upon arrival via Cash, POS or Mobile Money (MOMO).
@@ -471,7 +502,7 @@ function startCountdown(durationSec) {
 // Send Automated WhatsApp Alert in background
 function sendBackgroundWhatsAppAlert(order) {
   const apiKey = localStorage.getItem('slick_tek_callmebot_key');
-  const ownerPhone = localStorage.getItem('slick_tek_alert_phone') || "233248191726";
+  const ownerPhone = localStorage.getItem('slick_tek_alert_phone') || OWNER_WHATSAPP;
   
   if (!apiKey) return;
 

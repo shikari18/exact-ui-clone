@@ -515,7 +515,7 @@ function updateKPIs() {
 
 // Load Notification Alert Settings into Admin UI
 function loadAlertSettings() {
-  const phone = localStorage.getItem('slick_tek_alert_phone') || "233248191726";
+  const phone = localStorage.getItem('slick_tek_alert_phone') || "233509737543";
   const apiKey = localStorage.getItem('slick_tek_callmebot_key') || "";
 
   const pInput = document.getElementById('settingAlertPhone');
@@ -526,7 +526,7 @@ function loadAlertSettings() {
 }
 
 window.saveAlertSettings = function() {
-  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233248191726";
+  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233509737543";
   const apiKey = document.getElementById('settingAlertApiKey')?.value.trim() || "";
 
   localStorage.setItem('slick_tek_alert_phone', phone);
@@ -535,7 +535,7 @@ window.saveAlertSettings = function() {
 };
 
 window.sendTestAlert = function() {
-  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233248191726";
+  const phone = document.getElementById('settingAlertPhone')?.value.trim() || "233509737543";
   const apiKey = document.getElementById('settingAlertApiKey')?.value.trim() || "";
 
   if (!apiKey) {
