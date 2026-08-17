@@ -153,19 +153,28 @@ const ProductStore = {
   KEY: 'slick_tek_catalog',
 
   getAll() {
-    const raw = localStorage.getItem(this.KEY);
-    if (!raw) {
-      this.save(INITIAL_PRODUCTS);
-      return INITIAL_PRODUCTS;
-    }
     try {
-      return JSON.parse(raw);
+      const raw = localStorage.getItem(this.KEY);
+      if (!raw) {
+        this.save(INITIAL_PRODUCTS);
+        return INITIAL_PRODUCTS;
+      }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        this.save(INITIAL_PRODUCTS);
+        return INITIAL_PRODUCTS;
+      }
+      return parsed;
     } catch (e) {
+      this.save(INITIAL_PRODUCTS);
       return INITIAL_PRODUCTS;
     }
   },
 
   save(items) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      items = INITIAL_PRODUCTS;
+    }
     localStorage.setItem(this.KEY, JSON.stringify(items));
     window.PRODUCTS = items;
   },
@@ -197,11 +206,13 @@ const ProductStore = {
   },
 
   delete(id) {
-    const items = this.getAll().filter(p => p.id !== id);
+    let items = this.getAll().filter(p => p.id !== id);
+    if (items.length === 0) items = INITIAL_PRODUCTS;
     this.save(items);
   },
 
   resetToDefault() {
+    localStorage.removeItem(this.KEY);
     this.save(INITIAL_PRODUCTS);
     return INITIAL_PRODUCTS;
   }

@@ -40,7 +40,7 @@ function renderAdminProducts() {
   }
 
   grid.innerHTML = products.map(p => {
-    const cover = p.images && p.images.length > 0 ? p.images[0] : 'assets/logo.svg';
+    const cover = p.images && p.images.length > 0 ? p.images[0] : 'assets/logo.png';
     const photoCount = p.images ? p.images.length : 0;
 
     return `
