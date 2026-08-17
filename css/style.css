@@ -950,6 +950,41 @@ body {
   white-space: nowrap;
 }
 
+/* Share Product Link Buttons */
+.modal-share-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.btn-share-link, .btn-share-whatsapp {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  transition: all 0.15s;
+}
+
+.btn-share-whatsapp {
+  background: #EAFBF0;
+  border-color: rgba(37, 211, 102, 0.3);
+  color: #137734;
+}
+
+.btn-share-link:hover, .btn-share-whatsapp:hover {
+  opacity: 0.85;
+}
+
 /* Form Inputs */
 .form-group {
   margin-bottom: 14px;

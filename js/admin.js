@@ -88,6 +88,11 @@ function renderAdminProducts() {
 
         <!-- Actions -->
         <div class="admin-card-actions">
+          <button class="btn-card-action" onclick="copyAdminProductLink('${p.id}', this)" title="Copy direct link for customer">
+            <i data-lucide="link" style="width:14px;height:14px;color:var(--primary);"></i>
+            <span>Copy Link</span>
+          </button>
+
           <button class="btn-card-action" onclick="openEditProductModal('${p.id}')">
             <i data-lucide="edit-3" style="width:14px;height:14px;"></i>
             <span>Edit & Photos</span>
@@ -122,6 +127,27 @@ window.quickUpdatePrice = function(id, newPrice) {
 window.quickUpdateStock = function(id, newStock) {
   ProductStore.update(id, { stock: newStock.trim() || "In Stock" });
   showToast("✅ Stock status updated.");
+// Copy Direct Product Link for WhatsApp Customers
+window.copyAdminProductLink = function(productId, btn) {
+  const url = window.location.origin + '/?p=' + productId;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast("📋 Link copied! Ready to paste on WhatsApp");
+      if (btn) {
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;color:var(--green);"></i><span>Copied!</span>`;
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = oldHtml;
+          if (window.lucide) lucide.createIcons();
+        }, 2000);
+      }
+    }).catch(() => {
+      prompt("Copy direct product link for WhatsApp:", url);
+    });
+  } else {
+    prompt("Copy direct product link for WhatsApp:", url);
+  }
 };
 
 // Filter Products

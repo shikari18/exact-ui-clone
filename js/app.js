@@ -14,8 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProductGrid();
   updateOrdersBadge();
   initEvents();
+  checkUrlDirectProduct();
   if (window.lucide) lucide.createIcons();
 });
+
+// Check if a direct product link was opened (e.g. ?p=prod-projectorr or #prod-projectorr)
+function checkUrlDirectProduct() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetId = urlParams.get('p') || urlParams.get('product') || urlParams.get('id') || window.location.hash.replace('#', '');
+  
+  if (targetId) {
+    const p = ProductStore.getById(targetId) || ProductStore.getAll().find(item => item.id === targetId || item.id.includes(targetId) || item.name.toLowerCase().includes(targetId.toLowerCase()));
+    if (p) {
+      setTimeout(() => {
+        openOrderModal(p.id);
+        const card = document.querySelector(`[data-product-id="${p.id}"]`);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }
+}
 
 // Render Exact Product Grid matching clone cards
 function renderProductGrid() {
@@ -181,6 +199,12 @@ window.openOrderModal = function(productId) {
   const totalImgs = product.images.length;
   const hasMultiple = totalImgs > 1;
 
+  // Sync URL for direct link sharing
+  const shareUrl = window.location.origin + window.location.pathname + '?p=' + product.id;
+  try {
+    history.replaceState(null, '', '?p=' + product.id);
+  } catch (e) {}
+
   const container = document.getElementById('sheetProductRecap');
 
   container.innerHTML = `
@@ -227,6 +251,24 @@ window.openOrderModal = function(productId) {
       </div>
       <div class="modal-price">${formatPrice(product.price)}</div>
     </div>
+
+    <!-- Share Direct Link Buttons -->
+    <div class="modal-share-row">
+      <button type="button" class="btn-share-link" onclick="copyDirectProductLink('${product.id}', this)" title="Copy direct link to send to customer">
+        <i data-lucide="link" style="width:14px;height:14px;"></i>
+        <span>Copy Item Link</span>
+      </button>
+
+      <a 
+        href="https://wa.me/?text=${encodeURIComponent('Check out ' + product.name + ' on SLICK TEK (GH₵ ' + Number(product.price).toLocaleString() + '): ' + shareUrl)}" 
+        target="_blank" 
+        class="btn-share-whatsapp"
+        title="Send direct link via WhatsApp"
+      >
+        <i data-lucide="message-circle" style="width:14px;height:14px;"></i>
+        <span>Share to WhatsApp</span>
+      </a>
+    </div>
   `;
 
   // Reset GPS states
@@ -235,6 +277,27 @@ window.openOrderModal = function(productId) {
 
   openModal('orderModal');
   if (window.lucide) lucide.createIcons();
+};
+
+window.copyDirectProductLink = function(productId, btn) {
+  const url = window.location.origin + window.location.pathname + '?p=' + productId;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (btn) {
+        const oldText = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;color:#137734;"></i> <span>Link Copied!</span>`;
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = oldText;
+          if (window.lucide) lucide.createIcons();
+        }, 2000);
+      }
+    }).catch(() => {
+      prompt("Copy direct product link:", url);
+    });
+  } else {
+    prompt("Copy direct product link:", url);
+  }
 };
 
 // Modal Gallery Navigation
