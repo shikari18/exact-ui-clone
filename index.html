@@ -48,14 +48,13 @@
         <i data-lucide="menu" style="width:26px;height:26px;stroke-width:2.5;"></i>
       </button>
 
-      <h1 class="brand-title">
-        SLICK<br>TEK
-      </h1>
+      <div class="brand-title">
+        <img src="assets/logo.png" alt="SLICKTEK" class="brand-logo-img">
+      </div>
 
-      <button class="btn-header-icon cart-btn-wrap" onclick="openOrdersManager()" aria-label="View Orders">
-        <i data-lucide="shopping-cart" style="width:24px;height:24px;stroke-width:2;"></i>
-        <span class="cart-badge" id="ordersCartBadge">0</span>
-      </button>
+      <a href="https://wa.me/233504665384?text=Hello%20SlickTek%2C%20I%20have%20an%20inquiry%20about%20your%20products." target="_blank" class="btn-header-icon" aria-label="Chat WhatsApp Support" title="Chat on WhatsApp">
+        <i data-lucide="message-circle" style="width:24px;height:24px;color:#25D366;"></i>
+      </a>
     </header>
 
     <!-- Search Bar with Live Filtering -->
@@ -127,6 +126,26 @@
       >
     </section>
 
+    <!-- Want Your Product Featured? (Vendor Partner Banner) -->
+    <section class="vendor-cta-banner">
+      <div class="vendor-cta-content">
+        <div class="vendor-badge">
+          <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+          <span>PARTNER WITH US</span>
+        </div>
+        <h4>Want your product featured here?</h4>
+        <p>Sell your tech and appliances with SlickTek to reach customers across Ghana with same-day express delivery.</p>
+        <a 
+          href="https://wa.me/233504665384?text=Hello%20SlickTek%2C%20I%20want%20my%20products%20featured%20and%20sold%20on%20your%20store." 
+          target="_blank" 
+          class="btn-vendor-whatsapp"
+        >
+          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+          <span>Contact 050 466 5384 on WhatsApp</span>
+        </a>
+      </div>
+    </section>
+
   </div> <!-- End App Shell -->
 
   <!-- Fixed Bottom Navigation Bar (Home, Orders, Favorites) -->
@@ -155,12 +174,12 @@
     </div>
   </nav>
 
-  <!-- Left Slide-Over Menu Drawer -->
+  <!-- Left Slide-Over Menu Drawer (Cleaned Customer Navigation) -->
   <div class="drawer-overlay" id="menuDrawer" role="dialog" aria-hidden="true">
     <div class="drawer-panel">
       <!-- Drawer Header -->
       <div class="drawer-header">
-        <h2 class="brand-title" style="font-size:1.3rem;">SLICK TEK</h2>
+        <img src="assets/logo.png" alt="SLICKTEK" style="height:32px;width:auto;object-fit:contain;">
         <button class="btn-drawer-close" id="btnCloseMenu" aria-label="Close Menu">
           <i data-lucide="x" style="width:16px;height:16px;"></i>
         </button>
@@ -196,16 +215,19 @@
         </button>
       </div>
 
-      <!-- Received Orders & Admin Portal Buttons -->
-      <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;">
-        <button type="button" onclick="openOrdersManager()" style="width:100%;background:var(--accent);border:1px solid rgba(245,166,35,0.3);padding:12px;border-radius:14px;font-size:0.86rem;font-weight:700;color:var(--accent-foreground);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <i data-lucide="clipboard-list" style="width:16px;height:16px;"></i>
-          <span>View Received Orders (<span id="ordersCountBadge">0</span>)</span>
-        </button>
-
-        <a href="admin.html" style="width:100%;background:var(--muted);border:1px solid var(--border);padding:11px;border-radius:14px;font-size:0.82rem;font-weight:700;color:var(--foreground);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <i data-lucide="shield" style="width:15px;height:15px;color:var(--primary);"></i>
-          <span>⚙️ Open Admin & Pricing Portal</span>
+      <!-- Sell on SlickTek Partner Action -->
+      <div style="margin-top:auto;">
+        <a 
+          href="https://wa.me/233504665384?text=Hello%20SlickTek%2C%20I%20want%20my%20products%20featured%20and%20sold%20on%20your%20store." 
+          target="_blank" 
+          style="display:flex;flex-direction:column;gap:4px;background:linear-gradient(135deg, #1D1D1F, #2C2C2E);padding:14px;border-radius:16px;color:#FFFFFF;text-decoration:none;"
+        >
+          <span style="font-size:0.72rem;font-weight:800;color:var(--primary);letter-spacing:0.04em;">SELL WITH US</span>
+          <span style="font-size:0.88rem;font-weight:800;">Want your product featured?</span>
+          <span style="font-size:0.75rem;color:#25D366;font-weight:700;margin-top:2px;display:flex;align-items:center;gap:4px;">
+            <i data-lucide="message-circle" style="width:14px;height:14px;"></i>
+            <span>Chat 050 466 5384 on WhatsApp →</span>
+          </span>
         </a>
       </div>
     </div>
