@@ -13,12 +13,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.lucide) lucide.createIcons();
 });
 
+// Safe Catalog Retrieval with Automatic Fallback
+function getCatalogSafe() {
+  let list = [];
+  try {
+    if (typeof ProductStore !== 'undefined' && ProductStore.getAll) {
+      list = ProductStore.getAll();
+    }
+  } catch (e) {}
+
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    if (typeof INITIAL_PRODUCTS !== 'undefined' && Array.isArray(INITIAL_PRODUCTS)) {
+      list = INITIAL_PRODUCTS;
+      try {
+        if (typeof ProductStore !== 'undefined' && ProductStore.save) {
+          ProductStore.save(INITIAL_PRODUCTS);
+        }
+      } catch (e) {}
+    }
+  }
+  return list || [];
+}
+
 // Render Product Cards with Inline Quick-Edit
 function renderAdminProducts() {
   const grid = document.getElementById('adminProductGrid');
   if (!grid) return;
 
-  let products = ProductStore.getAll();
+  let products = getCatalogSafe();
 
   if (adminFilterQuery.trim()) {
     const q = adminFilterQuery.toLowerCase().trim();
@@ -32,10 +54,15 @@ function renderAdminProducts() {
     grid.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 40px 10px; color: var(--text-muted);">
         <i data-lucide="package-open" style="width: 36px; height: 36px; margin: 0 auto 8px auto; opacity: 0.5;"></i>
-        <p style="font-weight: 700;">No products found.</p>
+        <p style="font-weight: 700; font-size: 1rem; color: var(--text-dark);">No products loaded.</p>
+        <p style="font-size: 0.82rem; margin-top: 4px;">Click below to load all 10 store products and photos:</p>
+        <button class="btn-primary-action" onclick="ProductStore.resetToDefault(); renderAdminProducts();" style="margin-top: 14px; padding: 10px 20px;">
+          <span>Load All 10 Products</span>
+        </button>
       </div>
     `;
     if (window.lucide) lucide.createIcons();
+    updateKPIs();
     return;
   }
 
@@ -466,7 +493,7 @@ window.switchAdminTab = function(tab) {
 };
 
 function updateKPIs() {
-  const products = ProductStore.getAll();
+  const products = getCatalogSafe();
   const orders = JSON.parse(localStorage.getItem('slick_tek_orders') || '[]');
   
   let totalPhotos = 0;
