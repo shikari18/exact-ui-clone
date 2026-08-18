@@ -322,16 +322,38 @@ app.delete('/api/orders', (req, res) => {
   res.json({ success: true });
 });
 
+// Explicit HTML routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: "ok", service: "SLICK TEK Live Cloud Backend", timestamp: new Date() });
 });
 
-// Start Server
-app.listen(PORT, () => {
+// Catch-all fallback
+app.get('*', (req, res, next) => {
+  const filePath = path.join(__dirname, req.path);
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    return res.sendFile(filePath);
+  }
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Start Server (Bind to 0.0.0.0 for Render Linux Containers)
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=============================================`);
   console.log(`🚀 SLICK TEK Live Server running on port ${PORT}`);
-  console.log(`🌐 Live Store: http://localhost:${PORT}`);
-  console.log(`🔑 Admin Portal: http://localhost:${PORT}/admin.html`);
+  console.log(`🌐 Live Store: http://0.0.0.0:${PORT}`);
+  console.log(`🔑 Admin Portal: http://0.0.0.0:${PORT}/admin.html`);
   console.log(`=============================================`);
 });
