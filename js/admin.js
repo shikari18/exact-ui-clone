@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   updateKPIs();
   loadAlertSettings();
   if (window.lucide) lucide.createIcons();
+
+  if (window.ProductStore && ProductStore.subscribe) {
+    ProductStore.subscribe(() => {
+      renderAdminProducts();
+      updateKPIs();
+    });
+  }
 });
 
 // Safe Catalog Retrieval with Automatic Fallback

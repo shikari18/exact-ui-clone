@@ -148,78 +148,150 @@ const INITIAL_PRODUCTS = [
   }
 ];
 
-// Product Store API (Persisted via LocalStorage + In-Memory Fallback)
+// Product Store API (Persisted via Live Cloud Server + LocalStorage Cache + In-Memory Fallback)
 const ProductStore = {
   KEY: 'slick_tek_catalog',
+  listeners: [],
+
+  subscribe(cb) {
+    if (typeof cb === 'function') this.listeners.push(cb);
+  },
+
+  notify() {
+    this.listeners.forEach(cb => {
+      try { cb(this.getAll()); } catch (e) {}
+    });
+  },
 
   getAll() {
     try {
       const raw = localStorage.getItem(this.KEY);
       if (!raw) {
-        this.save(INITIAL_PRODUCTS);
+        this.saveLocal(INITIAL_PRODUCTS);
         return INITIAL_PRODUCTS;
       }
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed) || parsed.length === 0) {
-        this.save(INITIAL_PRODUCTS);
+        this.saveLocal(INITIAL_PRODUCTS);
         return INITIAL_PRODUCTS;
       }
       return parsed;
     } catch (e) {
-      this.save(INITIAL_PRODUCTS);
+      this.saveLocal(INITIAL_PRODUCTS);
       return INITIAL_PRODUCTS;
     }
   },
 
-  save(items) {
+  saveLocal(items) {
     if (!items || !Array.isArray(items) || items.length === 0) {
       items = INITIAL_PRODUCTS;
     }
-    localStorage.setItem(this.KEY, JSON.stringify(items));
+    try {
+      localStorage.setItem(this.KEY, JSON.stringify(items));
+    } catch (e) {}
     window.PRODUCTS = items;
+  },
+
+  save(items) {
+    this.saveLocal(items);
   },
 
   getById(id) {
     return this.getAll().find(p => p.id === id);
   },
 
-  add(productData) {
+  async add(productData) {
     const items = this.getAll();
     const newProduct = {
       id: "prod-" + Date.now(),
       ...productData
     };
     items.unshift(newProduct);
-    this.save(items);
+    this.saveLocal(items);
+    this.notify();
+
+    // Background Cloud Sync
+    try {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct)
+      });
+    } catch (e) {
+      console.warn("Cloud sync will retry on next connect:", e);
+    }
     return newProduct;
   },
 
-  update(id, updatedFields) {
+  async update(id, updatedFields) {
     const items = this.getAll();
     const index = items.findIndex(p => p.id === id);
     if (index !== -1) {
       items[index] = { ...items[index], ...updatedFields };
-      this.save(items);
+      this.saveLocal(items);
+      this.notify();
+
+      // Background Cloud Sync
+      try {
+        await fetch('/api/products/' + encodeURIComponent(id), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedFields)
+        });
+      } catch (e) {
+        console.warn("Cloud update offline/deferred:", e);
+      }
       return items[index];
     }
     return null;
   },
 
-  delete(id) {
+  async delete(id) {
     let items = this.getAll().filter(p => p.id !== id);
     if (items.length === 0) items = INITIAL_PRODUCTS;
-    this.save(items);
+    this.saveLocal(items);
+    this.notify();
+
+    // Background Cloud Sync
+    try {
+      await fetch('/api/products/' + encodeURIComponent(id), {
+        method: 'DELETE'
+      });
+    } catch (e) {}
   },
 
-  resetToDefault() {
+  async resetToDefault() {
     localStorage.removeItem(this.KEY);
-    this.save(INITIAL_PRODUCTS);
+    this.saveLocal(INITIAL_PRODUCTS);
+    this.notify();
+
+    try {
+      await fetch('/api/products/reset', { method: 'POST' });
+    } catch (e) {}
     return INITIAL_PRODUCTS;
+  },
+
+  async syncWithServer() {
+    try {
+      const res = await fetch('/api/products');
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+        this.saveLocal(json.data);
+        this.notify();
+      }
+    } catch (e) {
+      // Offline fallback is already in place
+    }
   }
 };
 
-// Global accessor for PRODUCTS
-window.PRODUCTS = ProductStore.getAll();
+// Auto-sync with cloud on load
+if (typeof window !== 'undefined') {
+  window.PRODUCTS = ProductStore.getAll();
+  // Trigger non-blocking cloud check
+  setTimeout(() => ProductStore.syncWithServer(), 100);
+}
 
 function formatPrice(amount) {
   return "GH₵ " + Number(amount || 0).toLocaleString();

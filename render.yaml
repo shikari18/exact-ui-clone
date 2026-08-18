@@ -1,6 +1,6 @@
 services:
   - type: web
     name: slick-tek
-    env: static
-    buildCommand: ""
-    staticPublishPath: .
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js

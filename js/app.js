@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initEvents();
   checkUrlDirectProduct();
   if (window.lucide) lucide.createIcons();
+
+  // Auto re-render when cloud sync completes
+  if (window.ProductStore && ProductStore.subscribe) {
+    ProductStore.subscribe(() => {
+      renderProductGrid();
+    });
+  }
 });
 
 // Check if a direct product link was opened (e.g. ?p=prod-projectorr or #prod-projectorr)
